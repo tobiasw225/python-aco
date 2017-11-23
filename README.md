@@ -1,9 +1,9 @@
 # python-aco
-_Author_:Tobias Wenzel
+__Author__:Tobias Wenzel
 
-_Name_: PSO Implementation and P-ACO Implementation
+__Name__: PSO Implementation and P-ACO Implementation
 
-_Description_: Implementation of the ACO with the possibility to visualise error,
+__Description__: Implementation of the ACO with the possibility to visualise error,
 shortest path and the pheromone-matrix. This is done in the following
 way: each ant guesses a paths through all points/cities according to a
 heuristic and the current pheromone value on the connection between
@@ -19,3 +19,5 @@ but there is no evaporation step. In this case a population of
 solution influences the choice of the ants. After 'population_size'
 steps, the solution looses it's impact and the corresponding pheromone
 value is removed from the pheromone matrix.
+
+__Purpose__: Fun + Prep. for exam.
