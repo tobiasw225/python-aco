@@ -39,7 +39,7 @@ if __name__ == '__main__':
     num_runs = 100
     tau_zero = 1
     num_ants = 20
-    num_cities = 20
+    num_cities = 10
     tau_delta = 1  # 5
     gamma = .1  # (1-gamma) .1
     alpha = 1
@@ -48,7 +48,7 @@ if __name__ == '__main__':
               tau_zero=tau_zero, num_ants=num_ants,
               num_cities=num_cities, tau=tau_delta, gamma=gamma,
               alpha=alpha, beta=beta, population_size=5)
-    error_plot = False
+    error_plot = True
     live_error = False
     path_vis = False
     plot_ph_matrix = True
