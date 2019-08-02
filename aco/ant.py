@@ -7,7 +7,7 @@ class Ant:
         :param path_length:
         """
         self.path_length = path_length
-        self.current_solution = []#np.zeros((self.path_length,1))
+        self.current_solution = []
         self.has_seen_cities = []
 
     def refresh_cities(self):
@@ -18,4 +18,4 @@ class Ant:
 
         :return:
         """
-        return np.random.randint(low=0,high=self.path_length)
+        return np.random.randint(low=0, high=self.path_length)
