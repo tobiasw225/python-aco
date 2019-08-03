@@ -9,16 +9,21 @@ from helper.constants import *
 class Paco(Aco):
     class __Paco(Aco):
         def __init__(self, num_ants=10,
-                     tau_zero=0.4, tsp_file="",
-                     num_cities=10, tau=0.5, gamma=0.0,
-                     alpha=1, beta=5, population_size=5):
+                     tau_zero=0.4,
+                     tsp_file="",
+                     num_cities=10,
+                     tau=0.5,
+                     gamma=0.0,
+                     alpha=1,
+                     beta=5,
+                     population_size=5):
             super().__init__(num_ants,
                      tau_zero, tsp_file,
                      num_cities, tau, gamma,
                      alpha, beta)
 
             self.fifo_solution_q = Queue(maxsize=population_size)
-            self.population_size=population_size
+            self.population_size = population_size
 
         def add_solution(self, ant_index):
             """
@@ -54,20 +59,20 @@ class Paco(Aco):
                     [solution[i]][solution[i + 1]] \
                     -= self.tau_delta
 
-        def run_paco(self, num_runs=50, live_error=True, output_file="",
-                     path_visualiser=None, ph_mtrx_visualiser=None,
-                     error_visualiser=None):
+        def run_paco(self,
+                     num_runs=50,
+                     path_visualiser=None,
+                     ph_mtrx_visualiser=None):
             """
-            Simple implementation of the P-ACO algorithm. This is similar to ACO, but there
-            is no evaporation step. In this case a population of solution influences the choice
-            of the ants. After 'population_size' steps, the solution looses it's impact and the
-            corresponding pheromone value is removed from the pheromone matrix.
+                Simple implementation of the P-ACO algorithm. This is similar to ACO, but there
+                is no evaporation step. In this case a population of solution influences the choice
+                of the ants. After 'population_size' steps, the solution looses it's impact and the
+                corresponding pheromone value is removed from the pheromone matrix.
+                
             :param num_runs:
-            :param live_error:
-            :param output_file:
             :param path_visualiser:
             :param ph_mtrx_visualiser:
-            :param error_visualiser:
+
             :return:
             """
 
@@ -81,36 +86,17 @@ class Paco(Aco):
 
                 print(iteration, self.ants[best_ant_index].length_of_path)
                 if ph_mtrx_visualiser:
-                    ph_mtrx_visualiser.plot_ph_matrix_fn( iteration)  # incl. save_fig
+                    ph_mtrx_visualiser.plot_ph_matrix_fn( iteration)
                 if path_visualiser:
                     x, y = self.get_best_ant_path(best_ant_index)
-                    path_visualiser.plot_path(x, y)#, iteration)  # incl. save_fig
-                if error_visualiser and live_error:
-                    error_visualiser.update_with_point(x=iteration,
-                                                       y=self.ants[best_ant_index].length_of_path)
-
-            if not live_error and error_visualiser:
-                error_visualiser.plot_my_data(range(0, num_runs), best_solutions)
-                plt.tight_layout()  # needed to have the labels in the figure
-                plt.savefig(output_file)
-                #plt.show()
-            elif error_visualiser:
-                # @todo bug
-                plt.savefig(output_file)
-
+                    path_visualiser.plot_path(x, y)
 
     instance = None
 
-    def __init__(self, num_ants=10,
-                 tau_zero=0.4, tsp_file="",
-                 num_cities=10, tau=0.5, gamma=0.8,
-                 alpha=1, beta=5, population_size=5):
+    def __init__(self, *args, **kwargs):
         super().__init__()
         if not Paco.instance:
-            Paco.instance = Paco.__Paco(num_ants,
-                 tau_zero, tsp_file,
-                 num_cities, tau, gamma,
-                 alpha, beta, population_size)
+            Paco.instance = Paco.__Paco(*args, **kwargs)
 
     def __getattr__(self, name):
         return getattr(self.instance, name)
