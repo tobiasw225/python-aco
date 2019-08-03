@@ -29,7 +29,7 @@ def read_tsp_data(file: str):
     """
     with open(file) as f:
         content = f.read()
-        data = re.findall(r'\d+ \d+\.\d+\s\d+.\d+', content)
+        data = re.findall(r'\d+ \d+\.[\de\+]+\s\d+.[\de\+]+', content)
         dim = detect_dimension(content)
         if data:
             return data, dim
@@ -41,7 +41,7 @@ def detect_dimension(content: str) -> int:
     :param content:
     :return:
     """
-    res = re.search(r'DIMENSION:\s*([\d]+)', content)
+    res = re.search(r'DIMENSION\s*:\s*([\d]+)', content)
     if res:
         return int(res.group(1))
     else:

@@ -30,7 +30,7 @@ class Aco:
             :param alpha:
             :param beta:
             """
-
+            print(tsp_file)
             self.points = load_tsp_problem(tsp_file, num_cities)
             self.path_length = len(self.points)
 
@@ -54,7 +54,7 @@ class Aco:
             self.tau_matrix.fill(self.tau_zero)
             np.fill_diagonal(self.tau_matrix, 0)
 
-        def best_ant_path(self, best_ant_index=0):
+        def best_ant_path(self, best_ant):
             """
                 gets coordinates of shortest paths and forwards it to the vis
 
@@ -62,8 +62,7 @@ class Aco:
             :return:
             """
             x, y = [], []
-            winner = self.colony[best_ant_index]
-            x1 = [sol+1 for sol in winner.current_solution]
+            x1 = [sol+1 for sol in best_ant.current_solution]
             x2 = np.roll(x1, 1)
             for i, j in zip(x1, x2):
                 c1, c2 = self.points[i], self.points[j]
@@ -83,13 +82,13 @@ class Aco:
         def tau_times_heuristic(self, i, j):
             return self.heuristic(i, j) * self.tau(i, j)
 
-        def find_new_ways(self, ant_solutions):
+        def shortest_path(self):
             """
                 find new paths for each ant in colony
 
-            :param ant_solutions:
             :return:
             """
+            ant_solutions = np.zeros(self.num_ants)
 
             for a, ant in enumerate(self.colony):
                 # start at random city
@@ -116,6 +115,8 @@ class Aco:
 
                 ant_solutions[a] = self.calc_length_of_path(ant)
                 ant.has_seen_cities = []
+
+            return np.min(ant_solutions)
 
         def calc_length_of_path(self, ant):
             """
@@ -161,24 +162,23 @@ class Aco:
             :param ph_mtrx_visualiser:
             :return:
             """
-            for iteration in range(num_runs):
-                ant_solutions = np.zeros((self.num_ants, 1))
-                self.find_new_ways(ant_solutions=ant_solutions)
-                best_ant_index = np.argmin(ant_solutions)  # greatest prob
-
+            for i in range(num_runs):
                 self.tau_matrix *= (1 - self.gamma)  # evaporation step before updating.
-                self.update_tau_matrix(self.colony[best_ant_index])
+                best_ant = self.shortest_path()
+                self.update_tau_matrix(best_ant)
 
+                """
+                    Visualisation & current status of algorithm 
+                """
                 if ph_mtrx_visualiser:
                     ph_mtrx_visualiser.plot_ph_matrix_fn(self)
 
                 if path_visualiser:
-                    x, y = self.best_ant_path(best_ant_index)
+                    x, y = self.best_ant_path(best_ant)
                     path_visualiser.plot_path(x, y)
 
-                self.error_rates.append(self.colony[best_ant_index].length_of_path)
+                self.error_rates.append(best_ant.length_of_path)
                 print(self.error_rates[-1])
-
 
     instance = None
 

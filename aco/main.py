@@ -40,10 +40,20 @@ if __name__ == '__main__':
     gamma = .1  # (1-gamma) .1
     alpha = 1
     beta = 5
-    aco = Aco(tsp_file="../res/ulysses16.tsp",
-              tau_zero=tau_zero, num_ants=num_ants,
-              num_cities=num_cities, tau=tau_delta, gamma=gamma,
-              alpha=alpha, beta=beta)
+
+    # aco = Aco(tsp_file="../res/ulysses16.tsp",
+    #           tau_zero=tau_zero, num_ants=num_ants,
+    #           num_cities=num_cities, tau=tau_delta, gamma=gamma,
+    #           alpha=alpha, beta=beta)
+    aco = Paco(tsp_file="../res/rd100.tsp",
+               tau_zero=tau_zero,
+               num_ants=num_ants,
+               num_cities=num_cities,
+               tau=tau_delta,
+               gamma=gamma,
+               alpha=alpha,
+               beta=beta,
+               population_size=5)
 
     plot_pathlengths = True
     path_vis = True
