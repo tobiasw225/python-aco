@@ -22,9 +22,18 @@ Depending on your capabilities and interests you have different options from her
 ## Prerequisites
 
 ```
-pip install numpy
-pip install matplotlib
+$ git clone git@github.com:tobiasw225/python-aco.git
+$ python3.11 -m venv venv
+$ source venv/bin/activate
+$ pip install poetry
+$ poetry install
 ```
+
+[main.py](main.py) offers an entry point to play around. 
+To plot the solutions, you install the visualisation dependencies `poetry install --with vis`.
+
+To execute the tests, install the test dependencies `poetry install --with vis --with tests`.
+
 
 ## ACO
 Implementation of the Ant Colony Optimizer (ACO) with the possibility to visualise error, shortest path and the pheromone-matrix. This is done in the following way: 
@@ -33,12 +42,12 @@ Each ant guesses a paths through all points/cities according to a heuristic and 
 the pheromone (could be done otherwise). Also, each connection is
 decreased by (1-gamma). 
 
-Extremely simplefied:
-```
+Extremely simplified:
+```python
 for i in range(num_runs):
-	best_ant = shortest_path()
-	update_tau_matrix(best_ant)
-	tau_matrix *= (1 - self.gamma) 
+    best_ant = shortest_path()
+    update_tau_matrix(best_ant)
+    tau_matrix *= (1 - self.gamma) 
 ```
 
 
@@ -46,13 +55,12 @@ for i in range(num_runs):
 
 Simple implementation of the Population based Ant Colony Optimizer (P-ACO) algorithm. This is similar to ACO, but there is no evaporation step for all all ants. In this case a population of solution influences the choice of the ants. After 'population_size' steps, the solution looses it's impact and the corresponding pheromone value is removed from the pheromone matrix.
 
-Extremely simplefied:
-```
+Extremely simplified:
+```python
 for i in range(num_runs):
     best_ant = self.shortest_path()
     self.add_solution(best_ant.current_solution)
 ```
-
 
 
 ## Relevant literature
