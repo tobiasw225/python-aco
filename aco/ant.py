@@ -9,4 +9,3 @@ class Ant:
 
     def refresh_cities(self):
         self.has_seen_cities = []
-

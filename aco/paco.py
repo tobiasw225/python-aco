@@ -1,30 +1,34 @@
-
-import numpy as np
 from multiprocessing import Queue
+
 
 from aco.common_aco import Aco
 from aco.tsp_parser import *
-from helper.constants import *
+from aco.constants import colon_line, half_space_line
 
 
 class Paco(Aco):
-    def __init__(self, num_ants=10,
-                 tau_zero=0.4,
-                 tsp_file="",
-                 num_cities=10,
-                 tau=0.5,
-                 gamma=0.0,
-                 alpha=1,
-                 beta=5,
-                 population_size=5):
-        super().__init__(num_ants=num_ants,
-                         tau_zero=tau_zero,
-                         tsp_file=tsp_file,
-                         num_cities=num_cities,
-                         tau=tau,
-                         gamma=gamma,
-                         alpha=alpha,
-                         beta=beta)
+    def __init__(
+        self,
+        num_ants=10,
+        tau_zero=0.4,
+        tsp_file="",
+        num_cities=10,
+        tau=0.5,
+        gamma=0.0,
+        alpha=1,
+        beta=5,
+        population_size=5,
+    ):
+        super().__init__(
+            num_ants=num_ants,
+            tau_zero=tau_zero,
+            tsp_file=tsp_file,
+            num_cities=num_cities,
+            tau=tau,
+            gamma=gamma,
+            alpha=alpha,
+            beta=beta,
+        )
 
         self.fifo_solution_q = Queue(maxsize=population_size)
         self.population_size = population_size
@@ -45,8 +49,7 @@ class Paco(Aco):
         :param solution:
         :return:
         """
-        for i0, i1 in zip(solution,
-                          np.roll(solution, 1)):
+        for i0, i1 in zip(solution, np.roll(solution, 1)):
             self.tau_matrix[i0, i1] += self.tau_delta
 
     def remove_pheromone(self, solution):
@@ -55,14 +58,10 @@ class Paco(Aco):
         :param solution:
         :return:
         """
-        for i0, i1 in zip(solution,
-                          np.roll(solution, 1)):
+        for i0, i1 in zip(solution, np.roll(solution, 1)):
             self.tau_matrix[i0, i1] -= self.tau_delta
 
-    def run_paco(self,
-                 num_runs=50,
-                 path_visualiser=None,
-                 ph_mtrx_visualiser=None):
+    def run_paco(self, num_runs=50, path_visualiser=None, ph_mtrx_visualiser=None):
         """
             Simple implementation of the P-ACO algorithm. This is similar to ACO, but there
             is no evaporation step (for all ants).
@@ -96,7 +95,7 @@ class Paco(Aco):
 
     def __str__(self):
         res = ""
-        res += colon_line+"\n"+ half_space_line+"P-ACO\n"+colon_line+"\n"
+        res += colon_line + "\n" + half_space_line + "P-ACO\n" + colon_line + "\n"
         res += f"ant number {self.num_ants} \n"
         res += f"tau {self.tau_delta} \n"
         res += f"pop-size {self.population_size}\n"
