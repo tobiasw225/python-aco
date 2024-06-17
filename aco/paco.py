@@ -11,25 +11,22 @@ class Paco(Aco):
         self,
         num_ants=10,
         tau_zero=0.4,
-        tsp_file="",
-        num_cities=10,
         tau=0.5,
         gamma=0.0,
         alpha=1,
         beta=5,
         population_size=5,
+        keep_paths=False,
     ):
         super().__init__(
             num_ants=num_ants,
             tau_zero=tau_zero,
-            tsp_file=tsp_file,
-            num_cities=num_cities,
             tau=tau,
             gamma=gamma,
             alpha=alpha,
             beta=beta,
+            keep_paths=keep_paths,
         )
-
         self.fifo_solution_q = Queue(maxsize=population_size)
         self.population_size = population_size
 
@@ -47,7 +44,7 @@ class Paco(Aco):
         for i0, i1 in zip(solution, np.roll(solution, 1)):
             self.tau_matrix[i0, i1] -= self.tau_delta
 
-    def run_paco(self, num_runs=50, path_visualiser=None, ph_mtrx_visualiser=None):
+    def run_paco(self, num_runs=50, points=None):
         """
         Simple implementation of the P-ACO algorithm. This is similar to ACO, but there
         is no evaporation step (for all ants).
@@ -55,23 +52,18 @@ class Paco(Aco):
         of the ants. After 'population_size' steps, the solution looses it's impact and the
         corresponding pheromone value is removed from the pheromone matrix.
         """
-
+        self.points = points
+        self.path_length = len(self.points)
+        self.make_tau_matrix()
         for i in range(num_runs):
-            best_ant = self.shortest_path()
+            best_ant_index = self.shortest_path()
+            best_ant = self.colony[best_ant_index]
             self.add_solution(best_ant.current_solution)
-            # todo extract me
-            # """
-            #     Visualisation & current status of algorithm
-            # """
-            #
-            # if ph_mtrx_visualiser:
-            #     ph_mtrx_visualiser.plot_ph_matrix_fn(i)
-            # if path_visualiser:
-            #     x, y = self.get_best_ant_path(best_ant)
-            #     path_visualiser.plot_path(x, y)
-
-            self.error_rates.append(best_ant.length_of_path)
-            print(self.error_rates[-1])
+            if self.keep_paths:
+                x, y = self.ant_path(best_ant)
+                self.best_paths.append((x, y))
+            self.path_lengths.append(best_ant.length_of_path)
+            print(self.path_lengths[-1])
 
     def __str__(self):
         res = ""
