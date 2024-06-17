@@ -16,6 +16,7 @@ class Aco:
         gamma=0.8,
         alpha=1,
         beta=5,
+        keep_paths=False,
     ):
         self.points = None
         self.tau_zero = tau_zero
@@ -32,26 +33,27 @@ class Aco:
         # todo rename
         self.path_length = None
         self.path_lengths = []
+        self.keep_paths = keep_paths
+        self.best_paths = []
 
     def make_tau_matrix(self):
         self.tau_matrix = np.zeros((self.path_length + 1, self.path_length + 1))
         self.tau_matrix.fill(self.tau_zero)
         np.fill_diagonal(self.tau_matrix, 0)
 
-    # currently only used for vis
-    # def ant_path(self, ant: Ant):
-    #     """
-    #     gets coordinates of shortest paths and forwards it to the vis
-    #     """
-    #     x, y = [], []
-    #     x1 = [sol + 1 for sol in ant.current_solution]
-    #     x2 = np.roll(x1, 1)
-    #     for i, j in zip(x1, x2):
-    #         c1, c2 = self.points[i], self.points[j]
-    #         x.extend([c1[0], c2[0]])
-    #         y.extend([c1[1], c2[1]])
-    #
-    #     return x, y
+    def ant_path(self, ant: Ant):
+        """
+        gets coordinates of shortest paths and forwards it to the vis
+        """
+        x, y = [], []
+        x1 = [sol + 1 for sol in ant.current_solution]
+        x2 = np.roll(x1, 1)
+        for i, j in zip(x1, x2):
+            c1, c2 = self.points[i], self.points[j]
+            x.extend([c1[0], c2[0]])
+            y.extend([c1[1], c2[1]])
+
+        return x, y
 
     def heuristic(self, i, j) -> float:
         h = distance.euclidean(self.points[i + 1], self.points[j + 1]) or 1
@@ -131,18 +133,11 @@ class Aco:
             best_ant_index = self.shortest_path()
             best_ant = self.colony[best_ant_index]
             self.update_tau_matrix(best_ant)
+            if self.keep_paths:
+                x, y = self.ant_path(best_ant)
+                # breakpoint()
 
-            """
-                Visualisation & current status of algorithm 
-            """
-            # todo extract me
-            # if ph_mtrx_visualiser:
-            #     ph_mtrx_visualiser.plot_ph_matrix_fn(self)
-            #
-            # if path_visualiser:
-            # x, y = self.ant_path(best_ant)
-            #     path_visualiser.plot_path(x, y)
-
+                self.best_paths.append((x, y))
             self.path_lengths.append(best_ant.length_of_path)
             print(self.path_lengths[-1])
 
@@ -152,5 +147,4 @@ class Aco:
         res += f"ant number {self.num_ants} \n"
         res += f"tau {self.tau_delta} \n"
         res += f"gamma {self.gamma} \n"
-        res += f"num cities {self.path_length}"
         return res

@@ -16,6 +16,7 @@ class Paco(Aco):
         alpha=1,
         beta=5,
         population_size=5,
+        keep_paths=False,
     ):
         super().__init__(
             num_ants=num_ants,
@@ -24,6 +25,7 @@ class Paco(Aco):
             gamma=gamma,
             alpha=alpha,
             beta=beta,
+            keep_paths=keep_paths,
         )
         self.fifo_solution_q = Queue(maxsize=population_size)
         self.population_size = population_size
@@ -57,17 +59,9 @@ class Paco(Aco):
             best_ant_index = self.shortest_path()
             best_ant = self.colony[best_ant_index]
             self.add_solution(best_ant.current_solution)
-            # todo extract me
-            # """
-            #     Visualisation & current status of algorithm
-            # """
-            #
-            # if ph_mtrx_visualiser:
-            #     ph_mtrx_visualiser.plot_ph_matrix_fn(i)
-            # if path_visualiser:
-            #     x, y = self.get_best_ant_path(best_ant)
-            #     path_visualiser.plot_path(x, y)
-
+            if self.keep_paths:
+                x, y = self.ant_path(best_ant)
+                self.best_paths.append((x, y))
             self.path_lengths.append(best_ant.length_of_path)
             print(self.path_lengths[-1])
 
