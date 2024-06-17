@@ -19,7 +19,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from aco.paco import Paco
+from aco.common_aco import Aco
+from aco.tsp_parser import load_tsp_problem
 
 # from vis.Path2dVis import Path2DVis
 
@@ -27,27 +28,29 @@ if __name__ == "__main__":
     num_runs = 50
     tau_zero = 1
     num_ants = 20
-    num_cities = 20
+    num_cities = 5
     tau_delta = 1  # 5
     gamma = 0.1  # (1-gamma) .1
     alpha = 1
     beta = 5
 
-    # aco = Aco(tsp_file="tsp_problems/ulysses16.tsp",
-    #           tau_zero=tau_zero, num_ants=num_ants,
-    #           num_cities=num_cities, tau=tau_delta, gamma=gamma,
-    #           alpha=alpha, beta=beta)
-    aco = Paco(
-        tsp_file="tsp_problems/rd100.tsp",
+    aco = Aco(
         tau_zero=tau_zero,
         num_ants=num_ants,
-        num_cities=num_cities,
         tau=tau_delta,
         gamma=gamma,
         alpha=alpha,
         beta=beta,
-        population_size=5,
     )
+    # aco = Paco(
+    #     tau_zero=tau_zero,
+    #     num_ants=num_ants,
+    #     tau=tau_delta,
+    #     gamma=gamma,
+    #     alpha=alpha,
+    #     beta=beta,
+    #     population_size=5,
+    # )
 
     plot_pathlengths = True
     path_vis = True
@@ -71,7 +74,8 @@ if __name__ == "__main__":
     #                                               sleep_interval=0)
 
     print(aco)
-    aco.run_aco(num_runs=num_runs, path_visualiser=path_visualiser)
+    points = load_tsp_problem("tsp_problems/rd100.tsp", num_cities)
+    aco.run_aco(num_runs=num_runs, points=points)
 
     if plot_pathlengths:
         values = aco.path_lengths
