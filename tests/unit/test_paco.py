@@ -6,9 +6,10 @@ from aco.paco import Paco
 
 
 @pytest.fixture
-def paco():
+def paco(tau_matrix, points):
     return Paco(
-        tau_zero=1,
+        points=points,
+        tau_matrix=tau_matrix,
         num_ants=20,
         tau=0.1,
         gamma=0.1,
@@ -51,12 +52,10 @@ def test_add_solution(paco):
     assert paco.fifo_solution_q.qsize() == paco.population_size
 
 
-def test_run_paco(paco, points):
-    paco.make_tau_matrix = MagicMock()
+def test_run_paco(paco):
     paco.add_solution = MagicMock()
     paco.shortest_path = MagicMock()
     num_runs = 5
-    paco.run_paco(num_runs=num_runs, points=points)
-    paco.make_tau_matrix.assert_called_once()
+    paco.run(num_runs=num_runs)
     assert paco.add_solution.call_count == num_runs
     assert paco.shortest_path.call_count == num_runs
