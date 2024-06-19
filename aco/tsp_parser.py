@@ -90,11 +90,6 @@ def create_cities_dict(cities):
 
 
 def load_tsp_problem(file: str, num_cities: int) -> dict:
-    """
-
-    :param file:
-    :return:
-    """
     assert os.path.isfile(file)
     data, dimension = read_tsp_data(file)
     cities = get_cities(data, dimension, num_cities=num_cities)

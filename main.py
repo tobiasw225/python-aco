@@ -10,46 +10,43 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-from aco.common_aco import Aco
 from aco.paco import Paco
+from aco.tau_matrix import TauMatrix
 from aco.tsp_parser import load_tsp_problem
 from vis.visualization import animate
 
 if __name__ == "__main__":
     num_runs = 50
-    tau_zero = 1
-    num_ants = 50
+    tau_zero = 7
     num_cities = 15
-    tau_delta = 1  # 5
-    gamma = 0.1  # (1-gamma) .1
-    alpha = 1
-    beta = 5
-
-    aco = Aco(
-        tau_zero=tau_zero,
-        num_ants=num_ants,
-        tau=tau_delta,
-        gamma=gamma,
-        alpha=alpha,
-        beta=beta,
-        keep_paths=True,
-    )
+    points = load_tsp_problem("tsp_problems/rd100.tsp", num_cities)
+    tau_matrix = TauMatrix(path_length=len(points), tau_zero=tau_zero)
+    # aco = Aco(
+    #     tau_matrix=tau_matrix,
+    #     points=points,
+    #     num_ants=10,
+    #     tau=5,
+    #     gamma=0.1,
+    #     alpha=1,
+    #     beta=5,
+    #     keep_paths=True,
+    # )
     aco = Paco(
-        tau_zero=tau_zero,
-        num_ants=num_ants,
-        tau=tau_delta,
-        gamma=gamma,
-        alpha=alpha,
-        beta=beta,
-        population_size=5,
+        tau_matrix=tau_matrix,
+        points=points,
+        num_ants=50,
+        tau=2,
+        gamma=0.1,
+        alpha=1,
+        beta=5,
+        population_size=17,
         keep_paths=True,
     )
 
     plot_path_lengths = True
     path_vis = False
     print(aco)
-    points = load_tsp_problem("tsp_problems/rd100.tsp", num_cities)
-    aco.run_paco(num_runs=num_runs, points=points)
+    aco.run(num_runs=num_runs)
 
     if plot_path_lengths:
         values = aco.path_lengths
