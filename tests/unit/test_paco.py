@@ -12,7 +12,6 @@ def paco(tau_matrix, points):
         tau_matrix=tau_matrix,
         num_ants=20,
         tau=0.1,
-        gamma=0.1,
         alpha=1,
         beta=5,
         population_size=5,
@@ -54,8 +53,8 @@ def test_add_solution(paco):
 
 def test_run_paco(paco):
     paco.add_solution = MagicMock()
-    paco.shortest_path = MagicMock()
+    paco.fastest_ant = MagicMock()
     num_runs = 5
     paco.run(num_runs=num_runs)
     assert paco.add_solution.call_count == num_runs
-    assert paco.shortest_path.call_count == num_runs
+    assert paco.fastest_ant.call_count == num_runs

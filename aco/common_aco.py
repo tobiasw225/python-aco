@@ -18,7 +18,6 @@ class Aco:
         gamma=0.8,
         alpha=1,
         beta=5,
-        keep_paths=False,
     ):
         self.tau_matrix = tau_matrix
         self.points = points
@@ -28,12 +27,9 @@ class Aco:
         self.gamma = gamma  # evaporation rate
         self.num_ants = num_ants
         self.colony = [Ant() for _ in range(num_ants)]
-        self.plot_ph_matrix = False
-        self.path_vis = False
         # todo rename
         self.path_length = len(self.points)
         self.path_lengths = []
-        self.keep_paths = keep_paths
         self.best_paths = []
 
     def ant_path(self, ant: Ant):
@@ -60,37 +56,46 @@ class Aco:
     def tau_times_heuristic(self, i, j):
         return self.heuristic(i, j) * self.tau(i, j)
 
-    def shortest_path(self):
+    def _sum_up_all_tau(self, ant: Ant, start_index: int):
+        # calculate the tau value for all points
+        # which the ant has not seen yet.
+        pij = np.zeros(len(self.points))
+        for i, city in enumerate(self.points):
+            # cities start with 1
+            current_city = city - 1
+            if current_city not in ant.has_seen_cities_in_iteration:
+                pij[i] = self.tau_times_heuristic(i=start_index, j=current_city)
+        return pij
+
+    def _step(self, ant: Ant, start_index: int):
+        # the ant walks one step further
+        # depending on the highest probability.
+        pij = self._sum_up_all_tau(ant=ant, start_index=start_index)
+        next_city = np.argmax(pij / np.sum(pij))
+        ant.current_solution.append(next_city)
+        ant.has_seen_cities_in_iteration.append(next_city)
+        return next_city  # continue with this city
+
+    def fastest_ant(self):
         """
         find new paths for each ant in colony
-        """
-        ant_solutions = np.zeros(self.num_ants)
 
-        for a, ant in enumerate(self.colony):
+        :return: index of fastest ant
+        """
+        ant_solutions = []
+
+        for ant in self.colony:
             # start at random city
-            start_i = np.random.randint(self.path_length)
-            ant.current_solution = [start_i]
-            ant.has_seen_cities.append(start_i)
+            start_index = np.random.randint(self.path_length)
+            ant.current_solution = [start_index]
+            ant.has_seen_cities_in_iteration.append(start_index)
 
             for step in range(1, self.path_length):
-                # sum up all tau
-                pij = np.zeros(len(self.points))
+                start_index = self._step(ant=ant, start_index=start_index)
 
-                for i, city in enumerate(self.points):
-                    # cities start with 1
-                    _city = city - 1
-                    if _city not in ant.has_seen_cities:
-                        pij[i] = self.tau_times_heuristic(start_i, _city)
-
-                # highest probability wins.
-                next_city = np.argmax(pij / np.sum(pij))
-                ant.current_solution.append(next_city)
-                ant.has_seen_cities.append(next_city)
-                start_i = next_city  # continue with this city
-
-            ant_solutions[a] = self.calc_length_of_path(ant)
-            ant.has_seen_cities = []
-        return np.argmin(ant_solutions)
+            ant_solutions.append(self.calc_length_of_path(ant))
+            ant.has_seen_cities_in_iteration = []
+        return self.colony[np.argmin(ant_solutions)]
 
     def calc_length_of_path(self, ant: Ant) -> float:
         ant.length_of_path = 0.0
@@ -120,19 +125,19 @@ class Aco:
         points. Meaning: The more pheromone and the closer, the higher the probability
         of choosing the city as next position in the path. After an iteration, the lengths
         of the paths are compared and the connections between the cities of the winning ant
-        get all of the pheromone (could be done otherwise). Also, each connection is decreased
+        get all the pheromone (could be done otherwise). Also, each connection is decreased
         by (1-gamma).
         """
         for i in range(num_runs):
             self.evaporate()
-            best_ant_index = self.shortest_path()
-            best_ant = self.colony[best_ant_index]
-            self.update_tau_matrix(best_ant)
-            if self.keep_paths:
-                x, y = self.ant_path(best_ant)
-                self.best_paths.append((x, y))
-            self.path_lengths.append(best_ant.length_of_path)
-            print(self.path_lengths[-1])
+            best_ant = self.fastest_ant()
+            self.update_tau_matrix(ant=best_ant)
+            self.save_solutions(ant=best_ant)
+
+    def save_solutions(self, ant: Ant):
+        self.best_paths.append(self.ant_path(ant=ant))
+        self.path_lengths.append(ant.length_of_path)
+        print(self.path_lengths[-1])
 
     def __str__(self) -> str:
         res = ""

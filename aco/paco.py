@@ -14,21 +14,17 @@ class Paco(Aco):
         points: dict,
         num_ants: int,
         tau: float,
-        gamma: float,
         alpha: int,
         beta: int,
         population_size: int,
-        keep_paths=False,
     ):
         super().__init__(
             tau_matrix=tau_matrix,
             points=points,
             num_ants=num_ants,
             tau=tau,
-            gamma=gamma,
             alpha=alpha,
             beta=beta,
-            keep_paths=keep_paths,
         )
         self.fifo_solution_q = Queue(maxsize=population_size)
         self.population_size = population_size
@@ -51,19 +47,14 @@ class Paco(Aco):
         """
         Simple implementation of the P-ACO algorithm. This is similar to ACO, but there
         is no evaporation step (for all ants).
-         In this case a population of solution influences the choice
-        of the ants. After 'population_size' steps, the solution looses it's impact and the
+        In this case a population of solution influences the choice
+        of the ants. After 'population_size' steps, the solution looses its impact and the
         corresponding pheromone value is removed from the pheromone matrix.
         """
         for i in range(num_runs):
-            best_ant_index = self.shortest_path()
-            best_ant = self.colony[best_ant_index]
+            best_ant = self.fastest_ant()
             self.add_solution(best_ant.current_solution)
-            if self.keep_paths:
-                x, y = self.ant_path(best_ant)
-                self.best_paths.append((x, y))
-            self.path_lengths.append(best_ant.length_of_path)
-            print(self.path_lengths[-1])
+            self.save_solutions(ant=best_ant)
 
     def __str__(self):
         res = ""

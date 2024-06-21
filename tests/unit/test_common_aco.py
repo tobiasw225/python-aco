@@ -16,7 +16,6 @@ def aco(points, tau_matrix):
         gamma=0.1,
         alpha=1,
         beta=5,
-        keep_paths=False,
     )
 
 
@@ -38,7 +37,9 @@ def test_tau_times_heuristic(aco):
 
 def test_shortest_path(aco):
     np.random.seed(1)
-    assert aco.shortest_path() == 11
+    a = aco.fastest_ant()
+    assert a.length_of_path == 2594.1582350725607
+    assert a.current_solution == [2, 3, 0, 4, 1]
 
 
 def test_calc_length_of_path(aco):
@@ -65,9 +66,9 @@ def test_update_tau_matrix(aco):
 
 
 def test_run_aco(aco):
-    aco.shortest_path = MagicMock()
+    aco.fastest_ant = MagicMock()
     aco.update_tau_matrix = MagicMock()
     num_runs = 5
     aco.run(num_runs=num_runs)
-    assert aco.shortest_path.call_count == num_runs
+    assert aco.fastest_ant.call_count == num_runs
     assert aco.update_tau_matrix.call_count == num_runs
