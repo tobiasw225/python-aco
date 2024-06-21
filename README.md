@@ -56,9 +56,10 @@ for i in range(num_runs):
 Simple implementation of the Population based Ant Colony Optimizer (P-ACO) algorithm. This is similar to ACO, but there is no evaporation step for all all ants. In this case a population of solution influences the choice of the ants. After 'population_size' steps, the solution looses it's impact and the corresponding pheromone value is removed from the pheromone matrix.
 
 Extremely simplified:
+
 ```python
 for i in range(num_runs):
-    best_ant = self.shortest_path()
+    best_ant = self.fastest_ant()
     self.add_solution(best_ant.current_solution)
 ```
 
