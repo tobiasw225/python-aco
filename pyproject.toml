@@ -32,3 +32,5 @@ optional = true
 [tool.poetry.group.lint.dependencies]
 pre-commit = "3.7.1"
 
+[tool.bandit]
+exclude_dirs = ["tests"]

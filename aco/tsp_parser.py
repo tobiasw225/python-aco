@@ -14,7 +14,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
 import re
 
 import numpy as np
@@ -90,7 +89,6 @@ def create_cities_dict(cities):
 
 
 def load_tsp_problem(file: str, num_cities: int) -> dict:
-    assert os.path.isfile(file)
     data, dimension = read_tsp_data(file)
     cities = get_cities(data, dimension, num_cities=num_cities)
     return create_cities_dict(cities)
